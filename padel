@@ -1,0 +1,96 @@
+//Bold
+float boldX, boldY;
+float boldXRetning= 1*2; 
+float boldYRetning = 4;
+int boldRadius;
+
+//Spiller
+float spillerX, spillerY;
+float spillerXRetning; 
+int spillerHastighed= 1;
+int spillerHøjde, spillerBredde;
+
+
+int randomSpeed = int(random(-2,2));
+
+void setup() {
+  size(800, 600);
+  boldX = width / 2;
+  boldY = height / 2;
+  boldRadius = 20;
+
+  spillerX = width / 2 - 50; // Startposition for spilleren
+  spillerY = height - 30;
+  spillerHøjde = 10;
+  spillerBredde = 100;
+  spillerHastighed = 7;
+}
+
+void draw() {
+  background(255);
+  bold();
+  spiller();
+}
+
+void spiller() {
+  // Flyt spilleren
+  spillerX += spillerXRetning;
+
+  // Tegn spilleren
+  fill(0);
+  rect(spillerX, spillerY, spillerBredde, spillerHøjde);
+
+  // Begræns spilleren til vinduets bredde
+  spillerX = constrain(spillerX, 0, width - spillerBredde);
+}
+
+void bold() {
+  // Flyt bolden
+  boldX += boldXRetning;
+  boldY += boldYRetning;
+
+  // Tegn bolden med et ansigt
+  fill(255, 192, 203); // Lyserød farve for bolden (R, G, B)
+  ellipse(boldX, boldY, boldRadius * 2, boldRadius * 2); // Bold med mindre radius
+
+  // Tjek kollision med vægge
+  if (boldX - boldRadius < 0 || boldX + boldRadius > width) {
+    boldXRetning *= -1;
+    
+  }
+  if (boldY - boldRadius < 0 || (boldY + boldRadius > height && boldY < spillerY)) {
+    boldYRetning *= -1;
+  }
+
+  // Tjek kollision med spilleren
+  if (boldY + boldRadius > spillerY && boldX > spillerX && boldX < spillerX + spillerBredde) {
+    int rand = randomSpeed;
+    boldYRetning = boldYRetning * -1 + rand;
+  }
+
+  // Tjek om bolden gik under spilleren
+  if (boldY > height) {
+    resetBold();
+  }
+}
+
+void keyPressed() {
+  // Bevæg spilleren med A og D
+  if (key == 'a' || key == 'A') {
+    spillerXRetning = spillerXRetning -spillerHastighed;
+  } else if (key == 'd' || key == 'D') {
+    spillerXRetning = spillerXRetning + spillerHastighed;
+  }
+}
+
+void keyReleased() {
+  // Stop spillerens bevægelse ved tastefrigivelse
+  spillerXRetning = 0;
+  
+}
+
+void resetBold() {
+  // Nulstil boldens position
+  boldX = width / 2;
+  boldY = height / 2;
+}
